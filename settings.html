@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Настройки мойки</title>
+    <style>
+        body { background: #1e1e2e; color: white; font-family: monospace; padding: 20px; }
+        input, button { padding: 10px; margin: 5px; font-size: 16px; }
+        .relay-test button { background: #4a4a6a; color: white; width: 80px; }
+    </style>
+</head>
+<body>
+    <h1>⚙️ Режим настройки</h1>
+    
+    <h2>ID мойки</h2>
+    <input type="number" id="washId" value="1">
+    <button id="saveIdBtn">Сохранить ID</button>
+    
+    <h2>📡 COM-порты</h2>
+    <label>Реле: <input id="relayPort" placeholder="COM3"></label>
+    <button id="connectRelayBtn">Подключить реле</button>
+    
+    <h2>🧪 Тест реле (каналы 1-8)</h2>
+    <div id="relayTest">
+        <!-- кнопки 1-8 -->
+    </div>
+    
+    <h2>⚙️ Настройки сервера</h2>
+    <label>IP сервера: <input id="serverIp" placeholder="192.168.1.100"></label>
+    <button id="saveServerBtn">Сохранить</button>
+    
+    <h2>💰 Стоимость</h2>
+    <label>Руб/сек: <input id="price" type="number" step="0.1" value="1.0"></label>
+    <label>Бонусы %: <input id="bonusPercent" type="number" value="5"></label>
+    
+    <h2>⏸ Пауза</h2>
+    <label>Бесплатная (сек): <input id="freePause" value="120"></label>
+    <label>Платная (руб/сек): <input id="paidPause" value="1.0"></label>
+    
+    <button id="saveAllBtn">💾 Сохранить все настройки</button>
+    <button id="backBtn">🔙 Назад</button>
+    
+    <script>
+        const { api } = window;
+        
+        async function loadSettings() {
+            const s = await api.getSettings();
+            document.getElementById('price').value = s.price_per_second || 1;
+            document.getElementById('bonusPercent').value = s.bonus_percent || 5;
+            document.getElementById('freePause').value = s.free_pause_seconds || 120;
+            document.getElementById('paidPause').value = s.paid_pause_price || 1;
+            document.getElementById('washId').value = await api.getWashId();
+            // Загрузить сохраненные порты и IP из localStorage
+            document.getElementById('relayPort').value = localStorage.getItem('relayPort') || '';
+            document.getElementById('serverIp').value = localStorage.getItem('serverIp') || '';
+        }
+        
+        document.getElementById('saveAllBtn').onclick = async () => {
+            await api.saveSettings({
+                price_per_second: parseFloat(document.getElementById('price').value),
+                bonus_percent: parseInt(document.getElementById('bonusPercent').value),
+                free_pause_seconds: parseInt(document.getElementById('freePause').value),
+                paid_pause_price: parseFloat(document.getElementById('paidPause').value)
+            });
+            alert('Настройки сохранены на сервере');
+        };
+        
+        document.getElementById('saveIdBtn').onclick = async () => {
+            await api.setWashId(parseInt(document.getElementById('washId').value));
+            alert('ID мойки сохранен');
+        };
+        
+        document.getElementById('connectRelayBtn').onclick = () => {
+            const port = document.getElementById('relayPort').value;
+            localStorage.setItem('relayPort', port);
+            api.relayCommand('connect', port);
+            alert(`Подключение к ${port}...`);
+        };
+        
+        document.getElementById('saveServerBtn').onclick = () => {
+            const ip = document.getElementById('serverIp').value;
+            localStorage.setItem('serverIp', ip);
+            alert(`IP сервера сохранен: ${ip}`);
+        };
+        
+        // Генерация кнопок теста реле
+        const container = document.getElementById('relayTest');
+        for (let i = 1; i <= 8; i++) {
+            const btn = document.createElement('button');
+            btn.textContent = i;
+            btn.onclick = () => api.relayCommand(i, 'on');
+            container.appendChild(btn);
+        }
+        
+        document.getElementById('backBtn').onclick = () => { window.location.href = 'index.html'; };
+        loadSettings();
+    </script>
+</body>
+</html>

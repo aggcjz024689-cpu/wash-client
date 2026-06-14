@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Мойка самообслуживания</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="video">📹 ВИДЕОНАБЛЮДЕНИЕ!</div>
+            <div class="auth">
+                <input type="tel" id="phone" placeholder="Номер телефона">
+                <button id="loginBtn">Войти</button>
+                <span id="bonus">💰 Бонусы: 0 руб</span>
+            </div>
+        </div>
+        
+        <div class="services" id="services">
+            <button data-channel="1">💧 Вода</button>
+            <button data-channel="2">🧼 Пена</button>
+            <button data-channel="4">✨ Воск</button>
+            <button data-channel="3">🌈 Цветная пена</button>
+            <button data-channel="5">💧 Осмос</button>
+            <button data-channel="6">🧹 Пылесос</button>
+            <button data-channel="7">💧 Мягкая вода</button>
+            <button data-channel="8">🧽 Химчистка</button>
+        </div>
+        
+        <div class="time-presets">
+            <button data-seconds="60">01:00</button>
+            <button data-seconds="120">02:00</button>
+            <button data-seconds="180">03:00</button>
+        </div>
+        
+        <div class="payment">
+            <button id="cashBtn">💵 Наличные</button>
+            <button id="cardBtn">💳 Карта</button>
+        </div>
+        
+        <div class="timer-display">00:00</div>
+        
+        <div class="wash-controls">
+            <button id="pauseBtn">⏸ Пауза</button>
+            <button id="stopBtn">⏹ Завершить</button>
+        </div>
+        
+        <button id="settingsBtn" class="settings-btn">⚙️ Настройки</button>
+    </div>
+    <script src="renderer.js"></script>
+</body>
+</html>
